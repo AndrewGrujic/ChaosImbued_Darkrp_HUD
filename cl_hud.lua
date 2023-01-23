@@ -1,25 +1,29 @@
-include"sh_hud.lua"
+local screenW,screenH = 0,0
 
-hook.Add("HUDPaint", "ChaosHud", function()
 
-    local scrW,scrH = ScrW(), ScrH()
-    local boxW,boxH = scrW * 0.25, scrH * 0.1
+local hudMainX,hudMainY = 0,0
 
-    surface.SetDrawColor(0,0,0)
-    surface.DrawRect(0, 0, boxW, boxH)
+-- Update of all HUD variables every tick
+    hook.Add("Think", "varUpdate", function()
 
-end)
+        screenW,screenH = ScrW(),ScrH()
+        hudMainX,hudMainY = screenW / 2 - 150, screenH / 2
 
-local HUDHide = {
+    end)
 
-    ["CHudHealth"] = true,
+-- Main Paiting Hook for the HUD
+    hook.Add("HUDPaint", "ChaosHUD", function()
 
-}
+        draw.RoundedBox(5, hudMainX, hudMainY, 100, 100, Color(0,0,0,100))
 
-hook.add("HUDShouldDraw", "HideHud", function (name)
+    end)
 
-    if (HUDHide[name]) then
-        return false
-    end
-
-end)
+-- Hides all unnecessary base HUD elements
+    local HUDHide = {
+        ["CHudHealth"] = true
+    }
+    hook.Add("HUDShouldDraw", "HideHud", function (name)
+        if (HUDHide[name]) then
+            return false
+        end
+    end)
