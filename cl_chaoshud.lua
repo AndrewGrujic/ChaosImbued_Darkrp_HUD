@@ -27,6 +27,14 @@ local hudPlayerMoney = "n/a"
 local hudPlayerJob = "n/a"
 local hudPlayerHealth = "n/a"
 
+local newTeamColourR = 0
+local newTeamColourG = 0
+local newTeamColourB = 0
+
+local oldTeamColourR = 0
+local oldTeamColourG = 0
+local oldTeamColourB = 0
+
 -- Hud colour table
     local hudRGB = {
 
@@ -76,7 +84,20 @@ local hudPlayerHealth = "n/a"
         hudPlayerJob = thisPlayer:getDarkRPVar("job")
         hudPlayerHealth = thisPlayer:Health()
 
-        local teamColour = team.GetColor(thisPlayer:Team())
+        local oldTeamColour = team.GetColor(thisPlayer:Team())
+
+        oldTeamColourR = oldTeamColour.r
+        oldTeamColourG = oldTeamColour.g
+        oldTeamColourB = oldTeamColour.b
+
+        newTeamColourG = Lerp(0.994,oldTeamColourG,newTeamColourG)
+        newTeamColourR = Lerp(0.994,oldTeamColourR,newTeamColourR)
+        newTeamColourB = Lerp(0.994,oldTeamColourB,newTeamColourB)
+
+        local newTeamColour = Color(newTeamColourR,newTeamColourG,newTeamColourB)
+
+        local teamColour = newTeamColour
+
         hudRGB.Accent = teamColour
 
     end)
