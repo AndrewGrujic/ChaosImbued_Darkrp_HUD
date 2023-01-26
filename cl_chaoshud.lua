@@ -40,6 +40,12 @@ local oldTeamColourB = 0
 local hudPlayerLicence = false
 local licenseTexture = Material("icon16/script.png")
 
+local thisPlayer
+
+local pModel
+local pModelHeadPos
+
+
 -- Hud colour table
     local hudRGB = {
 
@@ -85,7 +91,7 @@ local licenseTexture = Material("icon16/script.png")
         hudHealthW,hudHealthH = 275,35
 
     --Data element variable update
-        local thisPlayer = LocalPlayer()
+        thisPlayer = LocalPlayer()
 
         hudPlayerName = thisPlayer:getDarkRPVar("rpname")
         hudPlayerMoney = DarkRP.formatMoney(thisPlayer:getDarkRPVar("money"))
@@ -121,7 +127,27 @@ local licenseTexture = Material("icon16/script.png")
             hudRGB.License = Color(255,100,100,50)
         end
 
+        pModel:SetSize(hudPicW,hudPicH)
+        pModel:SetPos(hudPicX,hudPicY)
+        pModel:SetVisible(true)
+        pModel:SetModel(thisPlayer:GetModel())
+
+        function pModel:LayoutEntity(Entity) return end
+
+        pModelHeadPos = pModel.Entity:GetBonePosition(pModel.Entity:LookupBone("ValveBiped.Bip01_Head1"))
+
+        pModel:SetLookAt(pModelHeadPos)
+        pModel:SetFOV(40)
+        pModel:SetCamPos(pModelHeadPos + Vector(20,0,0))
+
     end)
+
+    if IsValid(pModel) then
+        pModel:Remove()
+    else
+        pModel = vgui.Create("DModelPanel")
+    end
+
 
 -- Main Painting Hook for the HUD
     hook.Add("HUDPaint", "ChaosHUD", function()
@@ -158,6 +184,7 @@ local licenseTexture = Material("icon16/script.png")
         surface.SetMaterial(licenseTexture)
         surface.SetDrawColor(hudRGB.License)
         surface.DrawTexturedRect(hudLicenceX + 3,hudLicenceY + 3,hudLicenceW - 6, hudLicenceH - 6)
+
     end)
 
 -- Hides all unnecessary base HUD elements
