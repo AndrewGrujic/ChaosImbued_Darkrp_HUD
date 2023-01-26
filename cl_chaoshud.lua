@@ -18,7 +18,9 @@
     local hudLicenceW,hudLicenceH = 0,0
     local hudMoneyW,hudMoneyH = 0,0
     local hudJobW,hudJobH = 0,0
+
     local hudHealthW,hudHealthH = 0,0
+    local hudHealthBarW = 0
 
 -- Data variable init
 
@@ -35,6 +37,9 @@ local oldTeamColourR = 0
 local oldTeamColourG = 0
 local oldTeamColourB = 0
 
+local hudPlayerLicence = false
+local licenseTexture = Material("icon16/script.png")
+
 -- Hud colour table
     local hudRGB = {
 
@@ -48,12 +53,14 @@ local oldTeamColourB = 0
 
         --Misc Element Colours
         Accent = Color(0,0,0),
+        License = Color(0,0,0),
         Red = Color(255,72,72)
     }
 
 -- Update of all HUD variables every frame
     hook.Add("Think", "varUpdate", function()
 
+    --HUD element variable update
         screenW,screenH = ScrW(),ScrH()
 
         hudMainX,hudMainY = screenW / 2 - 350, screenH - 150
@@ -77,13 +84,15 @@ local oldTeamColourB = 0
         hudHealthX,hudHealthY = hudMoneyX + hudMoneyW + 15, hudMoneyY
         hudHealthW,hudHealthH = 275,35
 
+    --Data element variable update
         local thisPlayer = LocalPlayer()
 
         hudPlayerName = thisPlayer:getDarkRPVar("rpname")
         hudPlayerMoney = DarkRP.formatMoney(thisPlayer:getDarkRPVar("money"))
         hudPlayerJob = thisPlayer:getDarkRPVar("job")
-        hudPlayerHealth = thisPlayer:Health()
+        hudPlayerHealth = math.Clamp(thisPlayer:Health(),0,100)
 
+    --Team colour variable update
         local oldTeamColour = team.GetColor(thisPlayer:Team())
 
         oldTeamColourR = oldTeamColour.r
@@ -99,6 +108,18 @@ local oldTeamColourB = 0
         local teamColour = newTeamColour
 
         hudRGB.Accent = teamColour
+
+    --Health bar update
+        hudHealthBarW = math.Clamp(Lerp(0.1,hudHealthBarW, thisPlayer:Health()),0,100)
+
+    --License element variable update
+        hudPlayerLicence = thisPlayer:getDarkRPVar("HasGunlicense")
+
+        if hudPlayerLicence then
+            hudRGB.License = Color(100,255,100,255)
+        else
+            hudRGB.License = Color(255,100,100,50)
+        end
 
     end)
 
@@ -123,6 +144,7 @@ local oldTeamColourB = 0
 
         draw.RoundedBox(5,hudHealthX - posOffset,hudHealthY - posOffset,hudHealthW + sizeOffset,hudHealthH + sizeOffset,hudRGB.DarkGrey)
         draw.RoundedBox(5,hudHealthX,hudHealthY,hudHealthW,hudHealthH,hudRGB.Grey)
+        draw.RoundedBox(5,hudHealthX,hudHealthY,hudHealthW * (hudHealthBarW / 100),hudHealthH,hudRGB.Red)
 
         draw.RoundedBox(5,hudJobX - posOffset - 2,hudJobY - posOffset - 2,hudJobW + sizeOffset + 4,hudJobH + sizeOffset + 4,hudRGB.DarkGrey)
         draw.RoundedBox(5,hudJobX - posOffset,hudJobY - posOffset,hudJobW + sizeOffset,hudJobH + sizeOffset,hudRGB.Accent)
@@ -132,6 +154,10 @@ local oldTeamColourB = 0
         draw.SimpleText(hudPlayerMoney,"ChatFont",hudMoneyX + 7,hudMoneyY + 8,hudRGB.White)
         draw.SimpleText(hudPlayerHealth,"ChatFont",hudHealthX + 7,hudHealthY + 8,hudRGB.White)
         draw.SimpleText(hudPlayerJob,"ChatFont", hudJobX + 7, hudJobY + 8, hudRGB.White)
+
+        surface.SetMaterial(licenseTexture)
+        surface.SetDrawColor(hudRGB.License)
+        surface.DrawTexturedRect(hudLicenceX + 3,hudLicenceY + 3,hudLicenceW - 6, hudLicenceH - 6)
     end)
 
 -- Hides all unnecessary base HUD elements
