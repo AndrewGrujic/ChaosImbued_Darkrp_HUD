@@ -38,7 +38,7 @@ local oldTeamColourG = 0
 local oldTeamColourB = 0
 
 local hudPlayerLicence = false
-local licenseTexture = Material("icon16/script.png")
+local licenseTexture = Material("../chaos_hud/materials/paper.png")
 
 local thisPlayer
 
@@ -138,7 +138,7 @@ local pModelHeadPos
 
         pModel:SetLookAt(pModelHeadPos)
         pModel:SetFOV(40)
-        pModel:SetCamPos(pModelHeadPos + Vector(20,0,0))
+        pModel:SetCamPos(pModelHeadPos + Vector(20,0,2))
 
     end)
 
